@@ -10,6 +10,7 @@ import (
 
 func run() {
 	inputFileName := ""
+	threadMax := 10
 	app := &cli.App{
 		Name:      "DomainCawler",
 		Usage:     "内链爬虫 - 找到深度埋藏的资产 \n在输入文件中 一行一个想要爬取的目标资产的url\n爬取后会保存为%ParentDomain%.csv的格式 \nEG:\n--list.txt\n----https://m.example.com\n----https://www.example.com",
@@ -17,6 +18,7 @@ func run() {
 		Version:   "0.0.1",
 		Flags: []cli.Flag{
 			&cli.IntFlag{Name: "deepthMax", Aliases: []string{"d"}, Destination: &crawler.MaxDepth, Usage: "爬虫深度 默认5", Value: 5, Required: false},
+			&cli.IntFlag{Name: "threadMax", Aliases: []string{"t"}, Destination: &threadMax, Usage: "线程数 默认10", Value: 10, Required: false},
 			&cli.StringFlag{Name: "fileInput", Aliases: []string{"f"}, Destination: &inputFileName, Usage: "URLS 文件位置", Value: "list.txt", Required: true},
 		}, // 配置信息
 		HideHelpCommand: true,
@@ -34,7 +36,7 @@ func run() {
 					crawler.CrawlSingle(it, &strList, 0) // 初始深度0
 				})
 			}
-			utils.RunWithConcurrency(tasks, 10)
+			utils.RunWithConcurrency(tasks, threadMax)
 			return nil
 		},
 	}
